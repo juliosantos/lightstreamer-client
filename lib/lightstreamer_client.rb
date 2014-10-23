@@ -1,6 +1,5 @@
 require 'eventmachine'
 require 'httparty'
-require 'securerandom'
 
 class LightstreamerClient
   attr_reader :username, :password, :url, :subscriptions
@@ -11,14 +10,14 @@ class LightstreamerClient
     @password = password
     @url = url
 
-    @subscriptions = SubscriptionManager.new
+    @subscriptions = Subscriptions.new
   end
 
   def on_header line
     if line.empty?
       callback = -> { |line| on_body(line) }
     else
-      match = /(\w+): (.*)/.match(line) 
+      match = /(\w+): (.*)/.match(line)
 
       case match[0]
       when "SessionId"
@@ -26,44 +25,6 @@ class LightstreamerClient
       when "ControlAddress"
         control_address = match[1]
       end
-    end
-  end
-
-  class SubscriptionManager
-    attr_accessor :subscriptions
-
-    def initialize
-      subscriptions = {}
-    end
-
-    def create schema: nil, callback: nil
-      table_id = generate_id
-
-      subscriptions[table_id] = Subscription.new table_id, schema, callback
-    end
-
-    def notify table_id, items
-      subscriptions.fetch(table_id).send_result items
-    end
-
-    def generate_id
-      SecureRandom.uuid
-    end
-  end
-
-  class Subscription < Struct.new(:table_id, schema, :callback)
-    def send_result items
-      callback Result.new(schema, items)
-    end
-  end
-
-  class Result
-    def initialize schema: nil, items: nil
-      @items = Hash[schema.zip(items)]
-    end
-
-    def [] key
-      @items.fetch(key)
     end
   end
 
