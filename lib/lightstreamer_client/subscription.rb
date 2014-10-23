@@ -1,5 +1,5 @@
-module Lightstreamer
-  class Subscription < Struct.new(:table_id, schema, :callback)
+class LightstreamerClient
+  class Subscription < Struct.new(:table_id, :schema, :callback)
     def send_result items
       callback Result.new(schema, items)
     end

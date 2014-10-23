@@ -1,4 +1,7 @@
+require 'lightstreamer_client/subscriptions'
+
 require 'eventmachine'
+require 'em-http'
 require 'httparty'
 
 class LightstreamerClient

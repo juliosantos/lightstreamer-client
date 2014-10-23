@@ -1,6 +1,8 @@
+require 'lightstreamer_client/subscription'
+
 require 'securerandom'
 
-module Lightstreamer
+class LightstreamerClient
   class Subscriptions
     attr_accessor :subscriptions
 
@@ -11,7 +13,9 @@ module Lightstreamer
     def create schema: nil, callback: nil
       table_id = generate_id
 
-      subscriptions[table_id] = Subscription.new table_id, schema, callback
+      subscription = Subscription.new table_id, schema, callback
+
+      subscriptions[table_id] = subscription
     end
 
     def notify table_id, items
