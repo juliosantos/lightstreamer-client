@@ -15,7 +15,7 @@ class LightstreamerClient
 
   def on_header line
     if line.empty?
-      callback = -> { |line| on_body(line) }
+      callback = ->(line) { on_body(line) }
     else
       match = /(\w+): (.*)/.match(line)
 
@@ -42,12 +42,12 @@ class LightstreamerClient
 
   def start adapter_set: nil
     query = {
-      "LS_user": => username,
+      "LS_user" => username,
       "LS_password" => password,
       "LS_adapter_set" => adapter_set
     }
 
-    callback = -> { |line| on_header(line) }
+    callback = ->(line) { on_header(line) }
 
     EventMachine.run do
       http = EventMachine::HttpRequest.new(url + "/create_session.txt").get(query: query)
